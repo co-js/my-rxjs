@@ -1,12 +1,22 @@
-function Observable(subscribe) {
+export function Observable(subscribe) {
   this.subscribe = subscribe;
 }
 
-const one$ = new Observable(observer => {
-  observer.next(1);
-  observer.complete();
-});
+Observable.fromEvent = (element, name) => {
+  return new Observable(observer => {
+    const callback = event => observer.next(event);
+    element.addEventListener(name, callback, false);
+    return () => element.removeEventListener(name, callback, false);
+  });
+};
 
-one$.subscribe({
-  next: value => console.log(value)
-});
+Observable.prototype.map = function(mapFn) {
+  const input = this;
+  return new Observable(observer => {
+    return input.subscribe({
+      next: value => observer.next(mapFn(value)),
+      error: err => observer.erorr(err),
+      complete: () => observer.complete()
+    });
+  });
+};
