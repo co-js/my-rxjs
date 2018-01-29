@@ -1,0 +1,82 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text">
+    <p></p>
+    <button type="button">
+        Unsubscribe
+    </button>
+    <script>
+        (function (global, factory) {
+            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+                typeof define === 'function' && define.amd ? define(['exports'], factory) :
+                    (factory((global.rxjs = {})));
+        }(this, (function (exports) {
+            'use strict';
+
+            function Observable(subscribe) {
+                this.subscribe = subscribe;
+            }
+
+            Observable.fromEvent = function (element, name) {
+                return new Observable(function (observer) {
+                    var callback = function callback(event) {
+                        return observer.next(event);
+                    };
+                    element.addEventListener(name, callback, false);
+                    return function () {
+                        return element.removeEventListener(name, callback, false);
+                    };
+                });
+            };
+
+            Observable.prototype.map = function (mapFn) {
+                var input = this;
+                return new Observable(function (observer) {
+                    return input.subscribe({
+                        next: function next(value) {
+                            return observer.next(mapFn(value));
+                        },
+                        error: function error(err) {
+                            return observer.erorr(err);
+                        },
+                        complete: function complete() {
+                            return observer.complete();
+                        }
+                    });
+                });
+            };
+
+            exports.Observable = Observable;
+
+            Object.defineProperty(exports, '__esModule', { value: true });
+
+        })));
+
+
+        const node = document.querySelector('input');
+        const p = document.querySelector('p');
+        const Observable = rxjs.Observable;
+
+        const input$ = Observable.fromEvent(node, 'input')
+            .map(event => event.target.value);
+        const unsubscribe = input$.subscribe({
+            next: (value) => {
+                p.innerHTML = value;
+            }
+        })
+
+        document
+            .querySelector('button')
+            .addEventListener('click', unsubscribe);
+    </script>
+</body>
+
+</html>

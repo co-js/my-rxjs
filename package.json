@@ -5,10 +5,14 @@
   "author": "common",
   "license": "MIT",
   "devDependencies": {
+    "babel-core": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "rollup": "^0.53.4",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-node-resolve": "^3.0.2"
+  },
+  "scripts": {
+    "build": "rollup --config"
   }
 }
